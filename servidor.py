@@ -55,8 +55,9 @@ class Cliente(Thread):
         self.socket.close()
 
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-server.bind("localhost", 9003)
+server.bind(("localhost", 9003))
 server.listen(4)
+nombres = []
 
 #eliminamos el fichero de ranking
 if(os.path.isfile("puntuaciones.txt")):
@@ -66,5 +67,32 @@ while True:
     # Se espera a un cliente
     socket_cliente, datos_cliente = server.accept()
     # Se escribe su informacion
-    email = socket_cliente.recv(1024).decode()
-    password = socket_cliente.recv(1024).decode()
+    existe = ""
+    while(existe != "t"):
+        email = socket_cliente.recv(1024).decode()
+        password = socket_cliente.recv(1024).decode()
+        fichero = open("usuarios.txt","r")
+        dicc_jug=[]
+        for linea in fichero:
+            datos=linea.split(';')
+            e=datos[0]
+            p=datos[1]
+            dicc_jug.append([e,p])
+        fichero.close()
+        for jug in dicc_jug:
+            if(email==str(jug[0]) and password==str(jug[1])):
+                existe = "t"
+                break
+            else:
+                existe = "f"
+        socket_cliente.send(existe.encode())
+    nombre = socket_cliente.recv(1024).decode()
+    cant = 0
+    while(cant != 3):
+        print(nombre)
+        nombres.append(nombre)
+        cant += 1
+        
+    for n in nombres:
+        socket_cliente.send(str(n).encode())
+    
