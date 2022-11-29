@@ -1,58 +1,7 @@
-from threading import Thread, Semaphore, Lock
 import socket
 import random
 import os, os.path
 from time import sleep
-
-class Cliente(Thread):
-    def __init__(self, socket_cliente, datos_cliente, nombre_cliente, palabra):
-        Thread.__init__(self)
-        self.socket = socket_cliente
-        self.datos = datos_cliente
-        self.nombre=nombre_cliente
-        self.intentos=6
-        self.escogida=palabra
-        self.encontrada=False
-      
-    def run(self):
-        global turnos, mutex
-        print(self.nombre+" espera turno para jugar.")
-        turnos.acquire()
-        print(self.nombre+" ha comenzado a jugar.")
-        adivina=['*']*len(self.escogida)
-        while(self.intentos>0 and self.encontrada==False):
-            letra=self.socket.recv(1024).decode()
-            if(letra in self.escogida):
-                self.socket.send("s".encode())
-                for i in range(len(self.escogida)):
-                    if (self.escogida[i]==letra):
-                        adivina[i]=letra
-            else:
-                self.intentos-=1
-                self.socket.send("n".encode())
-            pal="".join(adivina)
-            cadena=pal+";"+str(self.intentos)+";"
-            if(self.escogida==pal):
-                self.encontrada=True
-                cadena+="G;"
-                cadena+=self.escogida
-            else:
-                cadena+="P;"
-                cadena+=self.escogida
-            sleep(2)
-            self.socket.send(cadena.encode())
-        if(self.encontrada):
-            print(self.nombre+" ha ganado la partida. Puntos: "+str(self.intentos))
-            mutex.acquire()
-            fichero=open("puntuaciones.txt","a")
-            fichero.write(self.nombre+";"+str(self.intentos))
-            fichero.write("\n")
-            fichero.close()
-            mutex.release()
-        else:
-            print(self.nombre+" ha perdido la partida. Puntos: "+str(self.intentos))
-        turnos.release()
-        self.socket.close()
 
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server.bind(("localhost", 9003))
@@ -91,19 +40,12 @@ while True:
                 existe = "f"
         socket_cliente.send(existe.encode())
     nombre = socket_cliente.recv(1024).decode()
-    cant = 0
-    while(cant != 3):
-        print(nombre)
-        nombres.append(nombre)
-        cant += 1
-        
-    for n in nombres:
-        socket_cliente.send(str(n).encode())
+    print(nombre)
         
     #Metodo para seleccionar las 5 preguntas de forma aleatoria.
     
     def selector():
-        archivo = open("TrabajoUD3\preguntas.txt")
+        archivo = open("preguntas.txt")
         listaPreguntas = archivo.readlines()
         listaPreguntadas = []
         for i in range(5):
