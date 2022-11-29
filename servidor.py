@@ -56,12 +56,16 @@ class Cliente(Thread):
 
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server.bind(("localhost", 9003))
-server.listen(4)
+server.listen(1)
 nombres = []
+cant = 0
+
+if(os.path.isfile("usuariosConectados.txt")):
+    os.remove("usuariosConectados.txt")
 
 #eliminamos el fichero de ranking
 if(os.path.isfile("puntuaciones.txt")):
-    os.remove("puntuaciones.txt")    
+    os.remove("puntuaciones.txt")
 # bucle para atender clientes
 while True:
     # Se espera a un cliente
@@ -87,12 +91,5 @@ while True:
                 existe = "f"
         socket_cliente.send(existe.encode())
     nombre = socket_cliente.recv(1024).decode()
-    cant = 0
-    while(cant != 3):
-        print(nombre)
-        nombres.append(nombre)
-        cant += 1
-        
-    for n in nombres:
-        socket_cliente.send(str(n).encode())
+    print(nombre)
     
