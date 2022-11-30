@@ -1,41 +1,4 @@
-import socket, os, random
-
-#Metodo para seleccionar las 5 preguntas de forma aleatoria.
-    
-def selector():
-    archivo = open("preguntas.txt")
-    listaPreguntas = archivo.readlines()
-    listaPreguntadas = []
-    for i in range(5):
-        pregunta = random.choice(listaPreguntas)
-        listaPreguntadas.append(pregunta[0:(len(pregunta)-2)])
-        listaPreguntas.remove(pregunta)
-    return listaPreguntadas
-
-#Método para mostrar al usuario las 5 preguntas correspondientes y comprobar si la respuesta indicada es correcta devolviendo el numero de aciertos.
-
-def preguntas(listaPreguntadas):
-    res = 0
-    for i in range (len(listaPreguntadas)):
-        pregunta = listaPreguntadas[i]
-        print(pregunta[0:(len(pregunta)-2)])
-        option = input("Introducir la opción correcta (1, 2, 3, 4) -> ")
-        if(comprobarRespuesta(option,pregunta)):
-            print("Has introducido la respuesta correcta.")
-            res += 1
-        else:
-            print("La respuesta proporcionada no es correcta.")
-    print("La cantidad de aciertos que has obtenido es de: " + str(res))
-    return res
-#Metodo para comprobar que la respuesta proporcionada es la correcta.
-
-def comprobarRespuesta(option, pregunta):
-    listaPregunta = pregunta.split(";")
-    if(listaPregunta[len(listaPregunta)-1]==option):
-        return True
-    else:
-        return False
-
+import socket, os, random, usuario
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.connect(("10.10.1.245", 9003))
@@ -79,20 +42,13 @@ if(opcion == "1"):
         print("El usuario está registrado")
 
     nombre = input("Introduce tu nombre: ")
-    s.send(nombre.encode())
-    print("Bienvenido " + str(nombre) + ", tiene que esperar a que se unan el resto de jugadores...")
+    usuarioInicial = usuario(email,password,nombre)
+    s.send(str(usuarioInicial))
+    print("Bienvenido " + usuarioInicial.nick + ", tiene que esperar a que se unan el resto de jugadores...")
 
     print("Los jugadores que jugarán esta partida son:")
-
-    with open("usuariosConectados.txt", "a") as fichero:
-        fichero.write(email + ";" + password + ";" + nombre + ";")
-        fichero.write("\n")
-        fichero.close()
 
     print("Jugador 1: " + str(s.recv(1024).decode()))
     print("Jugador 2: " + str(s.recv(1024).decode()))
     print("Jugador 3: " + str(s.recv(1024).decode()))
     print("Jugador 4: " + str(s.recv(1024).decode()))
-
-    puntos = preguntas(selector())
-    print("Has conseguido " + str(puntos) + " puntos")
