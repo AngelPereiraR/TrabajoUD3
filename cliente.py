@@ -40,47 +40,73 @@ def comprobarRespuesta(option, pregunta):
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.connect(("10.10.1.245", 9003))
 
-existe = ""
-while(existe != "t"):
-    email = input("Introduce tu correo electrónico: ")
-    password = input("Introduce tu contraseña: ")
-    s.send(email.encode())
-    s.send(password.encode())
-    existe = s.recv(1024).decode()
-    if(existe == "f"):
-        print("El usuario no está registrado, pruebe de nuevo...")
+opcion = "2"
+s.send(opcion.encode())
+while(opcion != "1"):
+    print("---- Menú ----")
+    print("1. Iniciar sesión")
+    print("2. Registrar")
+    opcion = input("Introduce la opción que desea realizar: ")
+    s.send(opcion.encode())
+    if(opcion == "2"):
+        email = input("Introduce un correo electrónico: ")
+        password = input("Introduce una contraseña: ")
+        s.send(email.encode())
+        s.send(password.encode())
+        existe = s.recv(1024).decode()
+        if(existe == "t"):
+            print("El correo electrónico ya está escogido, pruebe de nuevo...\n")
+        else:
+            if(existe == "f"):
+                with open("usuarios.txt","a") as fichero:
+                    fichero.write(email + ";" + password + ";")
+                    fichero.write("\n")
+                    fichero.close()
+                print("El usuario se ha registrado correctamente.\n")
+    if(opcion > "2" or opcion < "0"):
+        print("No existe una opción para esa variable, pruebe de nuevo...\n")
+if(opcion == "1"):
+    existe = ""
+    while(existe != "t"):
+        email = input("Introduce tu correo electrónico: ")
+        password = input("Introduce tu contraseña: ")
+        s.send(email.encode())
+        s.send(password.encode())
+        existe = s.recv(1024).decode()
+        if(existe == "f"):
+            print("El usuario no está registrado, pruebe de nuevo...")
 
-if(existe == "t"):
-    print("El usuario está registrado")
+    if(existe == "t"):
+        print("El usuario está registrado")
 
-nombre = input("Introduce tu nombre: ")
-s.send(nombre.encode())
-print("Bienvenido " + str(nombre) + ", tiene que esperar a que se unan el resto de jugadores...")
+    nombre = input("Introduce tu nombre: ")
+    s.send(nombre.encode())
+    print("Bienvenido " + str(nombre) + ", tiene que esperar a que se unan el resto de jugadores...")
 
-print("Los jugadores que jugarán esta partida son:")
+    print("Los jugadores que jugarán esta partida son:")
 
-with open("usuariosConectados.txt", "a") as fichero:
-    fichero.write(email + ";" + password + ";" + nombre + ";")
-    fichero.write("\n")
-    fichero.close()
+    with open("usuariosConectados.txt", "a") as fichero:
+        fichero.write(email + ";" + password + ";" + nombre + ";")
+        fichero.write("\n")
+        fichero.close()
 
-dicc_jug=[]
-while(len(dicc_jug) < 4):
-    fichero = open("usuariosConectados.txt", "r")
-    for linea in fichero:
-        datos=linea.split(';')
-        e=datos[0]
-        p=datos[1]
-        n=datos[2]
-        dicc_jug.append([e,p,n])
-    if(len(dicc_jug) != 4):
-        dicc_jug = []
-    fichero.close()
+    dicc_jug=[]
+    while(len(dicc_jug) < 4):
+        fichero = open("usuariosConectados.txt", "r")
+        for linea in fichero:
+            datos=linea.split(';')
+            e=datos[0]
+            p=datos[1]
+            n=datos[2]
+            dicc_jug.append([e,p,n])
+        if(len(dicc_jug) != 4):
+            dicc_jug = []
+        fichero.close()
 
-print("Jugador 1: " + str(dicc_jug[0][2]))
-print("Jugador 2: " + str(dicc_jug[1][2]))
-print("Jugador 3: " + str(dicc_jug[2][2]))
-print("Jugador 4: " + str(dicc_jug[3][2]))
+    print("Jugador 1: " + str(dicc_jug[0][2]))
+    print("Jugador 2: " + str(dicc_jug[1][2]))
+    print("Jugador 3: " + str(dicc_jug[2][2]))
+    print("Jugador 4: " + str(dicc_jug[3][2]))
 
-puntos = preguntas(selector())
-print("Has conseguido " + str(puntos) + " puntos")
+    puntos = preguntas(selector())
+    print("Has conseguido " + str(puntos) + " puntos")
