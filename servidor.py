@@ -4,7 +4,7 @@ import os, os.path
 from time import sleep
 
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-server.bind(("10.10.1.245", 9003))
+server.bind(("localhost", 9003))
 server.listen(1)
 nombres = []
 cant = 0
@@ -22,6 +22,8 @@ while True:
     # Se escribe su informacion
     opcion = socket_cliente.recv(1024).decode()
     while(opcion != "1"):
+        email = socket_cliente.recv(1024).decode()
+        password = socket_cliente.recv(1024).decode()
         fichero = open("usuarios.txt","r")
         dicc_jug=[]
         for linea in fichero:
