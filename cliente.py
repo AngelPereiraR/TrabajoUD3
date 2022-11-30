@@ -38,7 +38,7 @@ def comprobarRespuesta(option, pregunta):
 
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-s.connect(("localhost", 9003))
+s.connect(("10.10.1.245", 9003))
 
 opcion = "2"
 while(opcion != "1"):
