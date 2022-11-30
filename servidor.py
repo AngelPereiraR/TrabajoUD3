@@ -67,3 +67,7 @@ while True:
             socket_cliente.send(existe.encode())
         nombre = socket_cliente.recv(1024).decode()
         print(nombre)
+        with open("usuariosConectados.txt", "a") as fichero:
+            fichero.write(email + ";" + password + ";" + nombre + ";")
+            fichero.write("\n")
+            fichero.close()
