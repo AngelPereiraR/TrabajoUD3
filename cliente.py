@@ -89,23 +89,10 @@ if(opcion == "1"):
         fichero.write("\n")
         fichero.close()
 
-    dicc_jug=[]
-    while(len(dicc_jug) < 4):
-        fichero = open("usuariosConectados.txt", "r")
-        for linea in fichero:
-            datos=linea.split(';')
-            e=datos[0]
-            p=datos[1]
-            n=datos[2]
-            dicc_jug.append([e,p,n])
-        if(len(dicc_jug) != 4):
-            dicc_jug = []
-        fichero.close()
-
-    print("Jugador 1: " + str(dicc_jug[0][2]))
-    print("Jugador 2: " + str(dicc_jug[1][2]))
-    print("Jugador 3: " + str(dicc_jug[2][2]))
-    print("Jugador 4: " + str(dicc_jug[3][2]))
+    print("Jugador 1: " + str(s.recv(1024).decode()))
+    print("Jugador 2: " + str(s.recv(1024).decode()))
+    print("Jugador 3: " + str(s.recv(1024).decode()))
+    print("Jugador 4: " + str(s.recv(1024).decode()))
 
     puntos = preguntas(selector())
     print("Has conseguido " + str(puntos) + " puntos")

@@ -71,3 +71,17 @@ while True:
             fichero.write(email + ";" + password + ";" + nombre + ";")
             fichero.write("\n")
             fichero.close()
+        dicc_jug=[]
+        while(len(dicc_jug) < 4):
+            fichero = open("usuariosConectados.txt", "r")
+            for linea in fichero:
+                datos=linea.split(';')
+                e=datos[0]
+                p=datos[1]
+                n=datos[2]
+                dicc_jug.append([e,p,n])
+            if(len(dicc_jug) != 4):
+                dicc_jug = []
+            fichero.close()
+        for i in range(len(dicc_jug)):
+            socket_cliente.send(dicc_jug[i][2].encode())
