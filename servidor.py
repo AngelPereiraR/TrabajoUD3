@@ -1,6 +1,4 @@
-import socket
-import random
-import os, os.path
+import os, os.path, re, random, socket
 from time import sleep
 
 class usuario:

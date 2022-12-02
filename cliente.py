@@ -1,4 +1,4 @@
-import socket, os, random
+import socket, os, random, re
 
 
 #Metodo para seleccionar las 5 preguntas de forma aleatoria.
@@ -37,6 +37,12 @@ def comprobarRespuesta(option, pregunta):
         return True
     else:
         return False
+    
+#Método para comprobar que el correo es válido.
+
+def verificadorCorreo(correo):
+    expresion_regular = r"(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])"
+    return re.match(expresion_regular, correo)
 
 class usuario:
     #Constructor
@@ -81,23 +87,32 @@ while(opcion != "1"):
     print("2. Registrar")
     opcion = input("Introduce la opción que desea realizar: ")
     s.send(opcion.encode())
+    
+    #Registro
+    
     if(opcion == "2"):
         email = input("Introduce un correo electrónico: ")
         password = input("Introduce una contraseña: ")
         s.send(email.encode())
         s.send(password.encode())
-        existe = s.recv(1024).decode()
-        if(existe == "t"):
-            print("El correo electrónico ya está escogido, pruebe de nuevo...\n")
+        if(verificadorCorreo(email)):
+            existe = s.recv(1024).decode()
+            if(existe == "t"):
+                print("El correo electrónico ya está escogido, pruebe de nuevo...\n")
+            else:
+                if(existe == "f"):
+                    with open("usuarios.txt","a") as fichero:
+                        fichero.write(email + ";" + password + ";")
+                        fichero.write("\n")
+                        fichero.close()
+                    print("El usuario se ha registrado correctamente.\n")
         else:
-            if(existe == "f"):
-                with open("usuarios.txt","a") as fichero:
-                    fichero.write(email + ";" + password + ";")
-                    fichero.write("\n")
-                    fichero.close()
-                print("El usuario se ha registrado correctamente.\n")
+            print("El email introducido no es válido.")
     if(opcion > "2" or opcion < "0"):
         print("No existe una opción para esa variable, pruebe de nuevo...\n")
+        
+#Login
+        
 if(opcion == "1"):
     existe = ""
     while(existe != "t"):
@@ -111,6 +126,8 @@ if(opcion == "1"):
 
     if(existe == "t"):
         print("El usuario está registrado")
+        
+    #Insertando nombre de usuario para la partida.
 
     nombre = input("Introduce tu nombre: ")
     usuarioInicial = usuario(email,password,nombre)
@@ -124,6 +141,8 @@ if(opcion == "1"):
         fichero.write(str(usuarioInicial))
         fichero.write("\n")
         fichero.close()
+        
+    #Esperando a los 4 jugadores.
 
     while(len(jugadores) < 4):
         fichero = open("usuariosConectados.txt", "r")
@@ -136,6 +155,8 @@ if(opcion == "1"):
             jugadores.append(u)
         if(len(jugadores) < 4):
             jugadores = []
+            
+    #Mostrando los jugadores loggeados.
 
     for i in range(len(jugadores)):
         print("Jugador " + str(i + 1) + ": " + str(jugadores[i].nick))
