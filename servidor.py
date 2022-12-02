@@ -36,45 +36,8 @@ class usuario:
     def set_nick(self, nick):
         self.nick = nick
 
-#Metodo para seleccionar las 5 preguntas de forma aleatoria.
-    
-def selector():
-    archivo = open("preguntas.txt")
-    listaPreguntas = archivo.readlines()
-    listaPreguntadas = []
-    for i in range(5):
-        pregunta = random.choice(listaPreguntas)
-        listaPreguntadas.append(pregunta[0:(len(pregunta)-2)])
-        listaPreguntas.remove(pregunta)
-    return listaPreguntadas
-
-#Método para mostrar al usuario las 5 preguntas correspondientes y comprobar si la respuesta indicada es correcta devolviendo el numero de aciertos.
-
-def preguntas(listaPreguntadas):
-    res = 0
-    for i in range (len(listaPreguntadas)):
-        pregunta = listaPreguntadas[i]
-        print(pregunta[0:(len(pregunta)-2)])
-        option = input("Introducir la opción correcta (1, 2, 3, 4) -> ")
-        if(comprobarRespuesta(option,pregunta)):
-            print("Has introducido la respuesta correcta.")
-            res += 1
-        else:
-            print("La respuesta proporcionada no es correcta.")
-    print("La cantidad de aciertos que has obtenido es de: " + str(res))
-    return res
-
-#Metodo para comprobar que la respuesta proporcionada es la correcta.
-
-def comprobarRespuesta(option, pregunta):
-    listaPregunta = pregunta.split(";")
-    if(listaPregunta[len(listaPregunta)-1]==option):
-        return True
-    else:
-        return False
-
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-server.bind(("10.10.1.245", 9003))
+server.bind(("localhost", 9003))
 server.listen(1)
 nombres = []
 cant = 0
@@ -149,17 +112,6 @@ while True:
         datos = (socket_cliente.recv(1024).decode()).split(";")
         u = usuario(datos[0],datos[1],datos[2])
         print(u.nick)
-        datos = (socket_cliente.recv(1024).decode()).split(";")
-        u1 = usuario(datos[0],datos[1],datos[2])
-        print(u1.nick)
-        datos = (socket_cliente.recv(1024).decode()).split(";")
-        u2 = usuario(datos[0],datos[1],datos[2])
-        print(u2.nick)
-        datos = (socket_cliente.recv(1024).decode()).split(";")
-        u3 = usuario(datos[0],datos[1],datos[2])
-        print(u3nick)
         
         # Enviamos los datos.
         
-        for i in range(len(dicc_jug)):
-            socket_cliente.send(dicc_jug[i][2].encode())
