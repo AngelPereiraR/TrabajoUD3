@@ -62,6 +62,8 @@ while True:
     while(opcion != "1"):
         email = socket_cliente.recv(1024).decode()
         password = socket_cliente.recv(1024).decode()
+        print(email)
+        print(password)
         fichero = open("usuarios.txt","r")
         dicc_jug=[]
         for linea in fichero:
@@ -71,7 +73,7 @@ while True:
             dicc_jug.append([e,p])
         fichero.close()
         for jug in dicc_jug:
-            if(email==str(jug[0])):
+            if(email==str(jug[0]) or email=="a"):
                 existe = "t"
                 break
             else:

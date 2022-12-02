@@ -92,22 +92,22 @@ while(opcion != "1"):
     
     if(opcion == "2"):
         email = input("Introduce un correo electrónico: ")
+        print(email)
         password = input("Introduce una contraseña: ")
-        s.send(email.encode())
-        s.send(password.encode())
+        print(password)
         if(verificadorCorreo(email)):
+            s.send(email.encode())
+            s.send(password.encode())
             existe = s.recv(1024).decode()
             if(existe == "t"):
                 print("El correo electrónico ya está escogido, pruebe de nuevo...\n")
             else:
                 if(existe == "f"):
-                    with open("usuarios.txt","a") as fichero:
-                        fichero.write(email + ";" + password + ";")
-                        fichero.write("\n")
-                        fichero.close()
-                    print("El usuario se ha registrado correctamente.\n")
+                   print("El usuario se ha registrado correctamente.\n")
         else:
-            print("El email introducido no es válido.")
+            s.send("a".encode())
+            s.send("a".encode())
+            print("El email introducido no es válido.\n")
     if(opcion > "2" or opcion < "0"):
         print("No existe una opción para esa variable, pruebe de nuevo...\n")
         
