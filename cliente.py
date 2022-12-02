@@ -72,7 +72,7 @@ class usuario:
         self.nick = nick
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-s.connect(("localhost", 9003))
+s.connect(("10.10.1.245", 9003))
 
 opcion = "2"
 while(opcion != "1"):
@@ -125,7 +125,7 @@ if(opcion == "1"):
         fichero.write("\n")
         fichero.close()
 
-    while(len(jugadores) < 2):
+    while(len(jugadores) < 4):
         fichero = open("usuariosConectados.txt", "r")
         for linea in fichero:
             datos = linea.split(";")
@@ -134,7 +134,7 @@ if(opcion == "1"):
             n = datos[2]
             u = usuario(e, p, n)
             jugadores.append(u)
-        if(len(jugadores) < 2):
+        if(len(jugadores) < 4):
             jugadores = []
 
     for i in range(len(jugadores)):
