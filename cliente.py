@@ -92,9 +92,7 @@ while(opcion != "1"):
     
     if(opcion == "2"):
         email = input("Introduce un correo electrónico: ")
-        print(email)
         password = input("Introduce una contraseña: ")
-        print(password)
         if(verificadorCorreo(email)):
             s.send(email.encode())
             s.send(password.encode())

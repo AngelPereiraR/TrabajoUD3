@@ -62,8 +62,6 @@ while True:
     while(opcion != "1"):
         email = socket_cliente.recv(1024).decode()
         password = socket_cliente.recv(1024).decode()
-        print(email)
-        print(password)
         fichero = open("usuarios.txt","r")
         dicc_jug=[]
         for linea in fichero:
