@@ -1,10 +1,9 @@
-import os, os.path, re, random, socket
-from time import sleep
+import socket
 
 class usuario:
-    #Constructor
+    # Constructor
     def __init__(self, email, password, nick):
-        #instance attributes
+        # instance attributes
         self.email = email
         self.password = password
         self.nick = nick
@@ -35,29 +34,24 @@ class usuario:
         self.nick = nick
 
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-server.bind(("10.10.1.245", 9003))
+server.bind(("localhost", 9003))
 server.listen(1)
 nombres = []
 cant = 0
 
-# Eliminamos el fichero de ranking
-
-if(os.path.isfile("puntuaciones.txt")):
-    os.remove("puntuaciones.txt")
-
-# Bucle para atender clientes
+# Bucle para atender clientes.
 
 while True:
     
-    # Se espera a un cliente
+    # Se espera a un cliente.
     
     socket_cliente, datos_cliente = server.accept()
     
-    # Se escribe su informacion
+    # Se escribe su informacion.
     
     opcion = socket_cliente.recv(1024).decode()
     
-    #Registro
+    # Registro.
     
     while(opcion != "1"):
         email = socket_cliente.recv(1024).decode()
@@ -83,7 +77,8 @@ while True:
                 fichero.write("\n")
                 fichero.close()
         opcion = socket_cliente.recv(1024).decode()
-    # Login
+    
+    # Login.
     if(opcion == "1"):
         existe = ""
         while(existe != "t"):
@@ -105,11 +100,34 @@ while True:
                     existe = "f"
             socket_cliente.send(existe.encode())
         
-        # Recibimos los datos.
+        # Recibimos los datos e imprimimos el nick.
         
         datos = (socket_cliente.recv(1024).decode()).split(";")
         u = usuario(datos[0],datos[1],datos[2])
         print(u.nick)
-        
-        # Enviamos los datos.
-        
+
+        cant += 1
+
+        if(cant == 4):
+
+            # Recibimos el numero de datos a recibir.
+
+            num = socket_cliente.recv(1024).decode()
+            puntuaciones = []
+            for i in range(int(num)):
+                linea = socket_cliente.recv(1024).decode()
+                if(linea != ""):
+                    puntuaciones.append(linea)
+
+            puntuacionesSeparadas = []
+            for p1 in puntuaciones:
+                puntuacion = p1.split(";")
+                puntuacionesSeparadas.append([puntuacion[0],puntuacion[1]])
+
+            # Imprimimos los datos.
+
+            for p2 in puntuacionesSeparadas:
+                if(p2[1] == "1"):
+                    print(p2[0] + ": " + p2[1] + " partida ganada")
+                else:
+                    print(p2[0] + ": " + p2[1] + " partidas ganadas")

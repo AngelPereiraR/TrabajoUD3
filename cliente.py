@@ -1,7 +1,6 @@
-import socket, os, random, re
+import socket, random, re
 
-
-#Metodo para seleccionar las 5 preguntas de forma aleatoria.
+# Metodo para seleccionar las 5 preguntas de forma aleatoria.
     
 def selector():
     archivo = open("preguntas.txt")
@@ -13,14 +12,15 @@ def selector():
         listaPreguntas.remove(pregunta)
     return listaPreguntadas
 
-#Método para mostrar al usuario las 5 preguntas correspondientes y comprobar si la respuesta indicada es correcta devolviendo el numero de aciertos.
+# Metodo para mostrar al usuario las 5 preguntas correspondientes y comprobar si la respuesta indicada es correcta devolviendo el numero de aciertos.
 
 def preguntas(listaPreguntadas):
     res = 0
     for i in range (len(listaPreguntadas)):
         pregunta = listaPreguntadas[i]
-        print(pregunta[0:(len(pregunta)-2)])
-        option = input("Introducir la opción correcta (1, 2, 3, 4) -> ")
+        preguntaSeparada = pregunta.split(";")
+        print(preguntaSeparada[0] + ". " + preguntaSeparada[1] + " " + preguntaSeparada[2] + " " + preguntaSeparada[3] + " " + preguntaSeparada[4] + " " + preguntaSeparada[5])
+        option = input("Introduce la opción correcta (1, 2, 3, 4) -> ")
         if(comprobarRespuesta(option,pregunta)):
             print("Has introducido la respuesta correcta.")
             res += 1
@@ -29,7 +29,7 @@ def preguntas(listaPreguntadas):
     print("La cantidad de aciertos que has obtenido es de: " + str(res))
     return res
 
-#Metodo para comprobar que la respuesta proporcionada es la correcta.
+# Metodo para comprobar que la respuesta proporcionada es la correcta.
 
 def comprobarRespuesta(option, pregunta):
     listaPregunta = pregunta.split(";")
@@ -38,16 +38,16 @@ def comprobarRespuesta(option, pregunta):
     else:
         return False
     
-#Método para comprobar que el correo es válido.
+# Metodo para comprobar que el correo es válido.
 
 def verificadorCorreo(correo):
     expresion_regular = r"(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])"
     return re.match(expresion_regular, correo)
 
 class usuario:
-    #Constructor
+    # Constructor
     def __init__(self, email, password, nick):
-        #instance attributes
+        # instance attributes
         self.email = email
         self.password = password
         self.nick = nick
@@ -78,7 +78,7 @@ class usuario:
         self.nick = nick
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-s.connect(("10.10.1.245", 9003))
+s.connect(("localhost", 9003))
 
 opcion = "2"
 while(opcion != "1"):
@@ -88,7 +88,7 @@ while(opcion != "1"):
     opcion = input("Introduce la opción que desea realizar: ")
     s.send(opcion.encode())
     
-    #Registro
+    # Registro.
     
     if(opcion == "2"):
         email = input("Introduce un correo electrónico: ")
@@ -109,7 +109,7 @@ while(opcion != "1"):
     if(opcion > "2" or opcion < "0"):
         print("No existe una opción para esa variable, pruebe de nuevo...\n")
         
-#Login
+# Login.
         
 if(opcion == "1"):
     existe = ""
@@ -125,7 +125,7 @@ if(opcion == "1"):
     if(existe == "t"):
         print("El usuario está registrado")
         
-    #Insertando nombre de usuario para la partida.
+    # Insertando nombre de usuario para la partida.
 
     nombre = input("Introduce tu nombre: ")
     usuarioInicial = usuario(email,password,nombre)
@@ -140,7 +140,7 @@ if(opcion == "1"):
         fichero.write("\n")
         fichero.close()
         
-    #Esperando a los 4 jugadores.
+    # Esperando a los 4 jugadores.
 
     while(len(jugadores) < 4):
         fichero = open("usuariosConectados.txt", "r")
@@ -154,11 +154,91 @@ if(opcion == "1"):
         if(len(jugadores) < 4):
             jugadores = []
             
-    #Mostrando los jugadores loggeados.
+    # Mostrando los jugadores loggeados.
 
     for i in range(len(jugadores)):
         print("Jugador " + str(i + 1) + ": " + str(jugadores[i].nick))
 
+    # Consiguiendo los puntos de la partida.
+    
     listaPreguntadas = selector()
     
     res = preguntas(listaPreguntadas)
+
+    # Mostrando los puntos de todos los jugadores.
+
+    with open("puntuaciones.txt", "a") as fichero:
+        fichero.write(email + ";" + str(res) + ";\n")
+        fichero.close()
+
+    puntuaciones = []
+    while(len(puntuaciones) < 4):
+        fichero = open("puntuaciones.txt", "r")
+        for linea in fichero:
+            datos = linea.split(";")
+            e = datos[0]
+            p = datos[1]
+            puntuaciones.append([e,p])
+        if(len(puntuaciones) < 4):
+            puntuaciones = []
+    
+    # Mostrando las puntuaciones de todos los jugadores y calculando al ganador.
+
+    max = "0"
+    emailGanador = ""
+    for i in range(len(puntuaciones)):
+        print("Jugador " + str(i + 1) + ": " + str(puntuaciones[i][1]))
+        if(max < puntuaciones[i][1]):
+            max = puntuaciones[i][1]
+            emailGanador = puntuaciones[i][0]
+    
+    ganador = "False"
+    for i in range(len(puntuaciones)):
+        if(email == emailGanador):
+            ganador = "True"
+    
+    # Mostrando si ha ganado o perdido la partida y sumando al fichero de las puntuaciones generales la partida ganada.
+
+    puntuaciones = []
+    existe = "False"
+    if(ganador == "True"):
+        print("¡¡¡Has sido el ganador de la partida!!!")
+        fichero = open("puntuacionesGenerales.txt", "r")
+        for linea in fichero:
+            datos = linea.split(";")
+            e = datos[0]
+            g = datos[1]
+            puntuaciones.append([e,g])
+        if(len(puntuaciones) == 0):
+            puntuaciones.append([email, 1])
+        else:
+            for i in range(len(puntuaciones)):
+                if(puntuaciones[i][0] == email):
+                    puntuacion = int(puntuaciones[i][1])
+                    puntuacion += 1
+                    puntuaciones[i][1] = str(puntuacion)
+                    existe = "True"
+            if(existe == "False"):
+                puntuaciones.append([email, 1])
+        with open("puntuacionesGenerales.txt", "w") as fichero:
+            for i in range(len(puntuaciones)):
+                fichero.write(str(puntuaciones[i][0]) + ";" + str(puntuaciones[i][1]) + ";\n")
+    else:
+        print("Lo sentimos. Has perdido esta partida")
+
+    # Enviando los datos del fichero de las puntuaciones generales al servidor
+
+    fichero = open("puntuacionesGenerales.txt", "r")
+
+    longitud = 0
+
+    for linea in fichero:
+        longitud += 1
+
+    s.send(str(longitud).encode())
+
+    fichero2 = open("puntuacionesGenerales.txt", "r")
+
+    for linea in fichero2:
+        datos = linea
+        s.send(datos.encode())
