@@ -34,7 +34,7 @@ class usuario:
         self.nick = nick
 
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-server.bind(("localhost", 9003))
+server.bind(("10.10.1.245", 9003))
 server.listen(1)
 nombres = []
 cant = 0
