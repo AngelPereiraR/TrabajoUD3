@@ -116,13 +116,16 @@ while True:
             puntuaciones = []
             for i in range(int(num)):
                 linea = socket_cliente.recv(1024).decode()
-                if(linea != ""):
-                    puntuaciones.append(linea)
+                prueba = linea.split("\n")
+                for p in prueba:
+                    if(p!=""):
+                        puntuaciones.append(p)
 
             puntuacionesSeparadas = []
             for p1 in puntuaciones:
-                puntuacion = p1.split(";")
-                puntuacionesSeparadas.append([puntuacion[0],puntuacion[1]])
+                if(p1 != ""):
+                    puntuacion = p1.split(";")
+                    puntuacionesSeparadas.append([puntuacion[0],puntuacion[1]])
 
             # Imprimimos los datos.
 
